@@ -17,30 +17,36 @@ API
 
 ### Login to cloud
 
-    var winkapi = new WinkAPI.WinkAPI(options).login(function(username, passphrase, err) {
-      if (!!err) ...
+    var clientID     = '...'
+      , clientSecret = '...'
+      , userName     = '...'
+      , passPhrase   = '...'
+      , winkapi
+      ;
+
+    winkapi = new WinkAPI.WinkAPI({ clientID     : clientID
+                                  , clientSecret : clientSecret }).login(userName, passPhrase, function(err) {
+      if (!err) return console.log('login error: ' + err.message);
 
       // otherwise, good to go!
     }).on('error', function(err) {
-      // for background errors
+      console.log('background error: ' + err.message);
     });
 
 ### Get user information
 
     winkapi.getUser(function(err, results) {
-      if (err) return console.log('getUser: ' + err.message);
-      if (results.status !== 'ok')  { console.log('getUser not ok'); return console.log(results); }
+      if (!!err) return console.log('getUser: ' + err.message);
 
-      // inspect results.body
+      // inspect results
     }
 
 ### Get device information
 
     winkapi.getDevices(function(err, results) {
-      if (err) return console.log('getDevices: ' + err.message);
-      if (results.status !== 'ok')  { console.log('getDevices not ok'); return console.log(results); }
+      if (!!err) return console.log('getDevices: ' + err.message);
 
-      // inspect results.body
+      // inspect results
     }
 
 

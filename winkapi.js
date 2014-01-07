@@ -70,11 +70,11 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
 };
 
 WinkAPI.prototype.getUser = function(callback) {
-  this.invoke('/users/me', callback);
+  return this.invoke('/users/me', callback);
 };
 
 WinkAPI.prototype.getDevices = function(callback) {
-  this.invoke('/users/me/wink_devices', callback);
+  return this.invoke('/users/me/wink_devices', callback);
 };
 
 

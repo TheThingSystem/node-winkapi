@@ -13,7 +13,7 @@
 , "bugs"           : {
     "url"          : "https://github.com/TheThingSystem/node-winkapi/issues"
   }
-, "keywords"       : [ "Quirky", "Wink", "Spotter" ]
+, "keywords"       : [ "Quirky", "Wink", "Spotter", "Porkfolio", "Nimbus",  "Eggminder", "Pivot Power Genius" ]
 , "main"           : "./winkapi.js"
 , "engines"        : {
     "node"         : ">=0.8"
