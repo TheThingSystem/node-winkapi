@@ -1,0 +1,22 @@
+{
+  "name"           : "node-winkapi"
+, "version"        : "0.0.1"
+, "description"    : "A node.js module to interface with Quirky Wink API"
+, "author"         : {
+    "name"         : "Marshall Rose"
+  , "email"        : "mrose17@gmail.com"
+  }
+, "repository"     : {
+    "type"         : "git"
+  , "url"          : "https://github.com/TheThingSystem/node-winkapi.git"
+  } 
+, "bugs"           : {
+    "url"          : "https://github.com/TheThingSystem/node-winkapi/issues"
+  }
+, "keywords"       : [ "Quirky", "Wink", "Spotter" ]
+, "main"           : "./winkapi.js"
+, "engines"        : {
+    "node"         : ">=0.8"
+  }
+, "readmeFilename" : "README.md"
+}
