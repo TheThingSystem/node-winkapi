@@ -35,7 +35,7 @@ var WinkAPI = function(options) {
     if ((DEFAULT_CONFIG.hasOwnProperty(k)) && (typeof self.config[k] === 'undefined'))  self.config[k] = DEFAULT_CONFIG[k];
   }
 
-  self.logger = self.optons.logger  || {};
+  self.logger = self.options.logger  || {};
   for (k in DEFAULT_LOGGER) {
     if ((DEFAULT_LOGGER.hasOwnProperty(k)) && (typeof self.logger[k] === 'undefined'))  self.logger[k] = DEFAULT_LOGGER[k];
   }
@@ -53,7 +53,7 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
   if (typeof callback !== 'function') throw new Error('callback is mandatory for login');
 
   json = { client_id     : self.options.clientID
-         , client_secret : self.optons.clientSecret
+         , client_secret : self.options.clientSecret
          , username      : username
          , password      : passphrase
          , grand_type    : 'password'
