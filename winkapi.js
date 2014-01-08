@@ -13,7 +13,7 @@ var DEFAULT_CONFIG = { clientID     : ''
                      , clientSecret : ''
                      };
 
-var DEFAULT_LOGGER = { error   : function(msg, props) { console.log(msg); if (!!props) console.trace(props.exception); }
+var DEFAULT_LOGGER = { error   : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
                      , warning : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
                      , notice  : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
                      , info    : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
@@ -52,14 +52,20 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
 
   if (typeof callback !== 'function') throw new Error('callback is mandatory for login');
 
-  json = { client_id     : self.options.clientID
+  json = { username      : username
          , client_secret : self.options.clientSecret
-         , username      : username
          , password      : passphrase
-         , grand_type    : 'password'
+         , client_id     : self.options.clientID
+         , grant_type    : 'password'
          };
-  self.invoke('oauth2/token', JSON.stringify(json), function(err, results) {
+  self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
     if (!!err) callback(err);
+
+    if (code !== 201) {
+      return callback(new Error('invalid credentials: '
+                        + (((!!results) && (!!results.data) && (!!results.data.error) ? results.data.error
+                                                                                      : JSON.stringify(results)))));
+    }
 
     if (!results.data) return callback(new Error('invalid response: ' + JSON.stringify(results)));
     self.oauth = results.data;
@@ -70,15 +76,53 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
 };
 
 WinkAPI.prototype.getUser = function(callback) {
-  return this.invoke('/users/me', callback);
+  return this.invoke('GET', '/users/me', callback);
 };
 
 WinkAPI.prototype.getDevices = function(callback) {
-  return this.invoke('/users/me/wink_devices', callback);
+  var self = this;
+
+  return this.invoke('GET', '/users/me/wink_devices', function(err, code, results) {
+    var device, devices, k;
+
+    if (!!err) return callback(err);
+
+/*
+    var f = function(device) {
+      var g = { cloud_clock   : function() {
+                                }
+              , eggtray       : function() {
+                                }
+              , piggy_bank    : function() {
+                                  return '/piggy_bank/' + device.id;
+                                }
+              , powerstrip    : function() {
+                                }
+              , sensor_pod    : function() {
+                                  return '/sensor_pod/' + device.id;
+                                }
+              }[device.type];
+
+      if (!!g) return g();
+    };
+
+    if ((!util.isArray(results)) || (results.length !== 1)) {
+      self.logger.error('getDevices', { event: 'https', results: results });
+      return callback(new Error('invalid response'));
+    }
+    results = results[0];
+
+    devices = {};
+    for (k in results) if ((results.hasOwnProperty(k)) && (k.lastIndexOf('_id') === k.length - 3)) {
+    }
+ */devices = results;
+
+    callback(null, code, devices);
+  });
 };
 
 
-WinkAPI.prototype.invoke = function(path, json, callback) {
+WinkAPI.prototype.invoke = function(method, path, json, callback) {
   var options;
 
   var self = this;
@@ -93,38 +137,49 @@ WinkAPI.prototype.invoke = function(path, json, callback) {
     };
   }
 
-  options = url.parse('https://winkapi.quirky.com/' + path);
+  options = url.parse('https://winkapi.quirky.com' + path);
   options.agent = false;
-  options.method = (!!json) ? 'POST': 'GET';
+  options.method = method;
   options.headers = {};
-  if (!!json) options.headers['Content-Type'] = ' application/json';
-  if (!!self.oauth.access_token) options.headers.Authorization = 'Bearer ' + self.oauth_access.token;
-  else if (!!self.oauth.refresh_token) {
+  if (!!json) {
+    options.headers['Content-Type'] = 'application/json';
+    json = JSON.stringify(json);
   }
-console.log('>>>');console.log(options);
-if (!!json) console.log(json);
+  if (!!self.oauth.access_token) options.headers.Authorization = 'Bearer ' + self.oauth_access.token;
+console.log('>>> options');console.log(options);
+if (!!json) {console.log('>>> body');console.log(json);}
 
   https.request(options, function(response) {
     var body = '';
 
-    response.on('json', function(chunk) {
+    response.on('data', function(chunk) {
       body += chunk.toString();
     }).on('end', function() {
+      var expected = { GET    : [ 200 ]
+                     , PUT    : [ 200 ]
+                     , POST   : [ 200, 201, 202 ]
+                     , DELETE : [ 200 ]
+                     }[method];
+
       var results = {};
 
-      if (response.statusCode !== 200) {
-        self.logger.warning(path, { event: 'https', code: response.statusCode, body: body });
+      try { results = JSON.parse(body); } catch(ex) {
+        self.logger.error(path, { event: 'json', diagnostic: ex.message, body: body });
+        return callback(ex, response.statusCode);
       }
 
-      try { results = JSON.parse(body); } catch(ex) { return callback(ex); }
+      if (expected.indexOf(response.statusCode) === -1) {
+         self.logger.error(path, { event: 'https', code: response.statusCode, body: body });
+         return callback(new Error('HTTP response ' + response.statusCode), response.statusCode, results);
+      }
 
-      callback(null, results);
+      callback(null, response.statusCode, results);
     }).on('close', function() {
       callback(new Error('premature end-of-file'));
     }).setEncoding('utf8');
   }).on('error', function(err) {
     callback(err);
-  }).end(json ? JSON.stringify(json) : null);
+  }).end(json);
 
   return self;
 };

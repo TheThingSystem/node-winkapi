@@ -2,15 +2,15 @@ var WinkAPI = require('./winkapi');
 
 var clientID     = '...'
   , clientSecret = '...'
-  , userName     = '...'
+  , userName     = 'mrose17@gmail.com'
   , passPhrase   = '...'
   , winkapi
   ;
 
 winkapi = new WinkAPI.WinkAPI({ clientID: clientID, clientSecret: clientSecret }).login(userName, passPhrase, function(err) {
-  if (!err) return console.log('login error: ' + err.message);
+  if (!!err) return console.log('login error: ' + err.message);
 
-  this.getUser(function(err, results) {
+  winkapi.getUser(function(err, results) {
     if (!!err) return console.log('getUser: ' + err.message);
 
     console.log('user:'); console.log(results);
