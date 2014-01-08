@@ -56,26 +56,85 @@ API
       console.log('background error: ' + err.message);
     });
 
-### Get user information
+### Get/Set user information
 
-    winkapi.getUser(function(err, code, user) {
+    winkapi.getUser(function(err, user) {
       if (!!err) return console.log('getUser: ' + err.message);
 
-      // inspect user
+      // inspect user{}
     }
 
-### Get device information
+    winkapi.setUser({ name: '...' }, function(err, user) {
+      if (!!err) return console.log('setUser: ' + err.message);
 
-    winkapi.getDevices(function(err, code, devices) {
+      // inspect user{}
+    }
+
+### Get/Set device information
+
+    winkapi.getDevices(function(err, devices) {
       if (!!err) return console.log('getDevices: ' + err.message);
 
-      // inspect devices
+      // inspect devices[{}]
+    }
+
+    winkapi.setDevice(device, propsfunction(err, device) {
+      if (!!err) return console.log('setDevice: ' + err.message);
+
+      // inspect device{}
+    }
+
+
+### Get icon information
+
+    winkapi.getIcons(function(err, icons) {
+      if (!!err) return console.log('getIcons: ' + err.message);
+
+      // inspect icons[{}]
+    }
+
+
+### Get channel information
+
+    winkapi.getChannels(function(err, channels) {
+      if (!!err) return console.log('getChannels: ' + err.message);
+
+      // inspect channels[{}]
+    }
+
+
+### Get/Set linked service information
+
+    winkapi.getServices(function(err, services) {
+      if (!!err) return console.log('getServices: ' + err.message);
+
+      // inspect services[{}]
+    }
+
+    winkapi.newService({ service: '...', account: '...' }, function(err, service) {
+      if (!!err) return console.log('setService: ' + err.message);
+
+      // inspect service{}
+    }
+
+
+### Get/Set triggers
+
+    winkapi.getTrigger(function(err, trigger) {
+      if (!!err) return console.log('getTrigger: ' + err.message);
+
+      // inspect trigger{}
+    }
+
+    winkapi.setTrigger('1', { enabled: true }, function(err, trigger) {
+      if (!!err) return console.log('setTrigger: ' + err.message);
+
+      // inspect trigger{}
     }
 
 
 ## For the Future
 - Sharing
-- Triggers
 - Alarms
 - Schedules
 

@@ -59,15 +59,16 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
          , grant_type    : 'password'
          };
   self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
+    var data, errors;
+
     if (!!err) callback(err);
 
-    if (code !== 201) {
-      return callback(new Error('invalid credentials: '
-                        + (((!!results) && (!!results.data) && (!!results.data.error) ? results.data.error
-                                                                                      : JSON.stringify(results)))));
+    data = results.data;
+    errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;
+    if ((!!errors) || (!data)) {
+      return callback(new Error('invalid credentials: ' + JSON.stringify(!!errors ? errors : results)));
     }
 
-    if (!results.data) return callback(new Error('invalid response: ' + JSON.stringify(results)));
     self.oauth = results.data;
     callback(null);
   });
@@ -89,15 +90,16 @@ WinkAPI.prototype._refresh = function(callback) {
          };
   delete(self.oauth.access_token);
   self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
+    var data, errors;
+
     if (!!err) callback(err);
 
-    if (code !== 201) {
-      return callback(new Error('invalid credentials: '
-                        + (((!!results) && (!!results.data) && (!!results.data.error) ? results.data.error
-                                                                                      : JSON.stringify(results)))));
+    data = results.data;
+    errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;
+    if ((!!errors) || (!data)) {
+      return callback(new Error('invalid credentials: ' + JSON.stringify(!!errors ? errors : results)));
     }
 
-    if (!results.data) return callback(new Error('invalid response: ' + JSON.stringify(results)));
     self.oauth = results.data;
     callback(null);
   });
@@ -107,51 +109,93 @@ WinkAPI.prototype._refresh = function(callback) {
 
 
 WinkAPI.prototype.getUser = function(callback) {
-  return this.invoke('GET', '/users/me', callback);
+  return this.roundtrip('GET', '/users/me', null, callback);
+};
+
+WinkAPI.prototype.setUser = function(props, callback) {
+  return this.roundtrip('PUT', '/users/me', props, callback);
 };
 
 WinkAPI.prototype.getDevices = function(callback) {
   var self = this;
 
-  return this.invoke('GET', '/users/me/wink_devices', function(err, code, results) {
-    var device, devices, k;
+  return self.invoke('GET', '/users/me/wink_devices', function(err, code, results) {
+    var data, datum, devices, errors, i, k;
 
     if (!!err) return callback(err);
 
-/*
-    var f = function(device) {
-      var g = { cloud_clock   : function() {
-                                }
-              , eggtray       : function() {
-                                }
-              , piggy_bank    : function() {
-                                  return '/piggy_bank/' + device.id;
-                                }
-              , powerstrip    : function() {
-                                }
-              , sensor_pod    : function() {
-                                  return '/sensor_pod/' + device.id;
-                                }
-              }[device.type];
-
-      if (!!g) return g();
-    };
-
-    if ((!util.isArray(results)) || (results.length !== 1)) {
-      self.logger.error('getDevices', { event: 'https', results: results });
-      return callback(new Error('invalid response'));
+    data = results.data;
+    errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;
+    if ((!!errors) || (!data) || (!util.isArray(data))) {
+      return callback(new Error('invalid response: ' + JSON.stringify(!!errors ? errors : results)));
     }
-    results = results[0];
 
-    devices = {};
-    for (k in results) if ((results.hasOwnProperty(k)) && (k.lastIndexOf('_id') === k.length - 3)) {
+    devices = [];
+    for (i = 0; i < data.length; i++) {
+      datum = data[i];
+
+      for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === k.length -3)) {
+        devices.push({ id    : datum[k]
+                     , type  : k.slice(0, -3)
+                     , name  : datum.name
+                     , path  : '/' + k.slice(0, -3) + 's/' + datum[k]
+                     , props : datum
+                     });
+        break;
+      }
     }
- */devices = results;
 
-    callback(null, code, devices);
+    callback(null, devices);
   });
 };
 
+WinkAPI.prototype.setDevice = function(device, props, callback) {
+  return this.roundtrip('PUT', device.path, props, callback);
+};
+
+WinkAPI.prototype.getIcons = function(callback) {
+  return this.roundtrip('GET', '/icons', null, callback);
+};
+
+WinkAPI.prototype.getChannels = function(callback) {
+  return this.roundtrip('GET', '/channels', null, callback);
+};
+
+WinkAPI.prototype.getServices = function(callback) {
+  return this.roundtrip('GET', '/users/me/linked_services', null, callback);
+};
+
+WinkAPI.prototype.newService = function(props, callback) {
+  return this.roundtrip('POST', '/users/me/linked_services', props, callback);
+};
+
+WinkAPI.prototype.getTrigger = function(id, callback) {
+  return this.roundtrip('GET', '/triggers/' + id, null, callback);
+};
+
+WinkAPI.prototype.setDevice = function(id, props, callback) {
+  return this.roundtrip('PUT',  '/triggers/' + id, props, callback);
+};
+
+
+
+WinkAPI.prototype.roundtrip = function(method, path, json, callback) {
+  var self = this;
+
+  return self.invoke(method, path, function(err, code, results) {
+    var data, errors;
+
+    if (!!err) return callback(err);
+
+    data = results.data;
+    errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;
+    if ((!!errors) || (!data)) {
+      return callback(new Error('invalid response: ' + JSON.stringify(!!errors ? errors : results)));
+    }
+
+    callback(null, data);
+  });
+};
 
 WinkAPI.prototype.invoke = function(method, path, json, callback) {
   var options;
