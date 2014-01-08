@@ -84,7 +84,7 @@ API
       // inspect device{}
     }
 
-    winkapi.setDevice(device, propsfunction(err, device) {
+    winkapi.setDevice(device, { name: ... }, function(err, device) {
       if (!!err) return console.log('setDevice: ' + err.message);
 
       // inspect device{}

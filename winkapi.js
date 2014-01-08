@@ -9,10 +9,6 @@ var https       = require('https')
   ;
 
 
-var DEFAULT_CONFIG = { clientID     : ''
-                     , clientSecret : ''
-                     };
-
 var DEFAULT_LOGGER = { error   : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
                      , warning : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
                      , notice  : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }
@@ -29,11 +25,6 @@ var WinkAPI = function(options) {
   if (!(self instanceof WinkAPI)) return new WinkAPI(options);
 
   self.options = options;
-
-  self.config = self.options.config || {};
-  for (k in DEFAULT_CONFIG) {
-    if ((DEFAULT_CONFIG.hasOwnProperty(k)) && (typeof self.config[k] === 'undefined'))  self.config[k] = DEFAULT_CONFIG[k];
-  }
 
   self.logger = self.options.logger  || {};
   for (k in DEFAULT_LOGGER) {
@@ -134,7 +125,7 @@ WinkAPI.prototype.getDevices = function(callback) {
     for (i = 0; i < data.length; i++) {
       datum = data[i];
 
-      for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === k.length -3)) {
+      for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === (k.length - 3))) {
         devices.push({ id    : datum[k]
                      , type  : k.slice(0, -3)
                      , name  : datum.name
