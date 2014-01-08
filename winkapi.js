@@ -141,7 +141,24 @@ WinkAPI.prototype.getDevices = function(callback) {
 };
 
 WinkAPI.prototype.getDevice = function(device, callback) {
-  return this.roundtrip('GET', device.path, null, callback);
+  var self = this;
+
+  return self.roundtrip('GET', device.path, null, function(err, datum) {
+    var k;
+
+    if (!!err) return callback(err);
+
+    for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === (k.length - 3))) {
+      return callback(null, { id    : datum[k]
+                            , type  : k.slice(0, -3)
+                            , name  : datum.name
+                            , path  : '/' + k.slice(0, -3) + 's/' + datum[k]
+                            , props : datum
+                            });
+    }
+
+    callback(null, null);
+  });
 };
 
 WinkAPI.prototype.setDevice = function(device, props, callback) {
