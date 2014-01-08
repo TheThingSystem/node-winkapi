@@ -240,7 +240,7 @@ WinkAPI.prototype.invoke = function(method, path, json, callback) {
   }
   if (!!json) {
     options.headers['Content-Type'] = 'application/json';
-    json = JSON.stringify(json).replace(/":/g, '": ').replace(/","/g, '", "');
+    json = JSON.stringify(json);
     options.headers['Content-Length'] = Buffer.byteLength(json);
   }
 
