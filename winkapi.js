@@ -79,7 +79,6 @@ WinkAPI.prototype._refresh = function(callback) {
          , refresh_token : self.oauth.refresh_token
          , grant_type    : 'refresh_token'
          };
-  delete(self.oauth.access_token);
   self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
     var data, errors;
 
@@ -197,6 +196,11 @@ WinkAPI.prototype.getDialTemplates = function(callback) {
 WinkAPI.prototype.roundtrip = function(method, path, json, callback) {
   var self = this;
 
+  if (typeof json === 'function') {
+    callback = json;
+    json = null;
+  }
+
   return self.invoke(method, path, function(err, code, results) {
     var data, errors;
 
@@ -231,12 +235,14 @@ WinkAPI.prototype.invoke = function(method, path, json, callback) {
   options.agent = false;
   options.method = method;
   options.headers = {};
+  if ((!!self.oauth.access_token) && ((!json) || (!json.grant_type))) {
+    options.headers.Authorization = 'Bearer ' + self.oauth.access_token;
+  }
   if (!!json) {
     options.headers['Content-Type'] = 'application/json';
     json = JSON.stringify(json).replace(/":/g, '": ').replace(/","/g, '", "');
     options.headers['Content-Length'] = Buffer.byteLength(json);
   }
-  if (!!self.oauth.access_token) options.headers.Authorization = 'Bearer ' + self.oauth.access_token;
 
   https.request(options, function(response) {
     var body = '';
