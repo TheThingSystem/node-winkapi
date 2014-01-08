@@ -185,10 +185,13 @@ WinkAPI.prototype.getTrigger = function(id, callback) {
   return this.roundtrip('GET', '/triggers/' + id, null, callback);
 };
 
-WinkAPI.prototype.setDevice = function(id, props, callback) {
+WinkAPI.prototype.setTrigger = function(id, props, callback) {
   return this.roundtrip('PUT',  '/triggers/' + id, props, callback);
 };
 
+WinkAPI.prototype.getDialTemplates = function(callback) {
+  return this.roundtrip('GET', '/dial_templates', null, callback);
+};
 
 
 WinkAPI.prototype.roundtrip = function(method, path, json, callback) {

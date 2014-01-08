@@ -26,6 +26,10 @@ winkapi = new WinkAPI.WinkAPI({ clientID: clientID, clientSecret: clientSecret }
     if (!!err) return console.log('getChannels: ' + err.message);
 
     console.log('channels:'); console.log(channels);
+  }).getDialTemplates(function(err, dialTemplates) {
+    if (!!err) return console.log('getDialTemplates: ' + err.message);
+
+    console.log('dialTemplates:'); console.log(dialTemplates);
   }).getServices(function(err, services) {
     if (!!err) return console.log('getServices: ' + err.message);
 

@@ -108,6 +108,12 @@ API
       // inspect channels[{}]
     }
 
+    winkapi.getDialTemplates(function(err, dialTemplates) {
+      if (!!err) return console.log('getDialTemplates: ' + err.message);
+
+      // inspect dialTemplates[{}]
+    }
+
 
 ### Get/Set linked service information
 
