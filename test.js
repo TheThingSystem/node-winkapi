@@ -2,7 +2,7 @@ var WinkAPI = require('./winkapi');
 
 var clientID     = '...'
   , clientSecret = '...'
-  , userName     = 'mrose17@gmail.com'
+  , userName     = '...'
   , passPhrase   = '...'
   , winkapi
   ;
