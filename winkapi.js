@@ -75,6 +75,37 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
   return self;
 };
 
+WinkAPI.prototype._refresh = function(callback) {
+  var json;
+
+  var self = this;
+
+  if (typeof callback !== 'function') throw new Error('callback is mandatory for refresh');
+
+  json = { client_id     : self.options.clientID
+         , client_secret : self.options.clientSecret
+         , refresh_token : self.oauth.refresh_token
+         , grant_type    : 'refresh_token'
+         };
+  delete(self.oauth.access_token);
+  self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
+    if (!!err) callback(err);
+
+    if (code !== 201) {
+      return callback(new Error('invalid credentials: '
+                        + (((!!results) && (!!results.data) && (!!results.data.error) ? results.data.error
+                                                                                      : JSON.stringify(results)))));
+    }
+
+    if (!results.data) return callback(new Error('invalid response: ' + JSON.stringify(results)));
+    self.oauth = results.data;
+    callback(null);
+  });
+
+  return self;
+};
+
+
 WinkAPI.prototype.getUser = function(callback) {
   return this.invoke('GET', '/users/me', callback);
 };
@@ -143,11 +174,10 @@ WinkAPI.prototype.invoke = function(method, path, json, callback) {
   options.headers = {};
   if (!!json) {
     options.headers['Content-Type'] = 'application/json';
-    json = JSON.stringify(json);
+    json = JSON.stringify(json).replace(/":/g, '": ').replace(/","/g, '", "');
+    options.headers['Content-Length'] = Buffer.byteLength(json);
   }
-  if (!!self.oauth.access_token) options.headers.Authorization = 'Bearer ' + self.oauth_access.token;
-console.log('>>> options');console.log(options);
-if (!!json) {console.log('>>> body');console.log(json);}
+  if (!!self.oauth.access_token) options.headers.Authorization = 'Bearer ' + self.oauth.access_token;
 
   https.request(options, function(response) {
     var body = '';
