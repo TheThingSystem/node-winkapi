@@ -10,11 +10,11 @@ var clientID     = '...'
 winkapi = new WinkAPI.WinkAPI({ clientID: clientID, clientSecret: clientSecret }).login(userName, passPhrase, function(err) {
   if (!!err) return console.log('login error: ' + err.message);
 
-  winkapi.getUser(function(err, results) {
+  winkapi.getUser(function(err, code, results) {
     if (!!err) return console.log('getUser: ' + err.message);
 
     console.log('user:'); console.log(results);
-  }).getDevices(function(err, results) {
+  }).getDevices(function(err, code, results) {
     if (!!err) return console.log('getDevices: ' + err.message);
 
     console.log('devices:'); console.log(results);
