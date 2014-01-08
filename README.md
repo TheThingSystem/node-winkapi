@@ -78,6 +78,12 @@ API
       // inspect devices[{}]
     }
 
+    winkapi.getDevice(device, function(err, device) {
+      if (!!err) return console.log('getDevice: ' + err.message);
+
+      // inspect device{}
+    }
+
     winkapi.setDevice(device, propsfunction(err, device) {
       if (!!err) return console.log('setDevice: ' + err.message);
 
@@ -120,7 +126,7 @@ API
 
 ### Get/Set triggers
 
-    winkapi.getTrigger(function(err, trigger) {
+    winkapi.getTrigger(id, function(err, trigger) {
       if (!!err) return console.log('getTrigger: ' + err.message);
 
       // inspect trigger{}

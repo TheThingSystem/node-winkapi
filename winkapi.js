@@ -149,6 +149,10 @@ WinkAPI.prototype.getDevices = function(callback) {
   });
 };
 
+WinkAPI.prototype.getDevice = function(device, callback) {
+  return this.roundtrip('GET', device.path, null, callback);
+};
+
 WinkAPI.prototype.setDevice = function(device, props, callback) {
   return this.roundtrip('PUT', device.path, props, callback);
 };
