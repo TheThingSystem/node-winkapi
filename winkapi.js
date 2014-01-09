@@ -189,7 +189,20 @@ WinkAPI.prototype._children = function(datum, prefix) {
 };
 
 WinkAPI.prototype.setDevice = function(device, props, callback) {
-  return this.roundtrip('PUT', device.path, props, callback);
+  var self = this;
+
+  return self.roundtrip('PUT', device.path, props, function(err, datum) {
+    if (!!err) return callback(err);
+
+    return callback(null, { id      : device.id
+                          , type    : device.type
+                          , name    : device.name
+                          , path    : device.path
+                          , dials   : self._children(datum,  'dials')
+                          , outlets : self._children(datum, 'outlets')
+                          , props   : datum
+                          });
+  });
 };
 
 WinkAPI.prototype.getIcons = function(callback) {
@@ -224,6 +237,7 @@ WinkAPI.prototype.setDial = function(dial, props, callback) {
   var json;
 
   var self = this;
+if(!dial.props){console.log('>>> <<<');console.log(dial);}
 
   json = { name                  : props.name                  || dial.props.name
          , label                 : props.label                 || dial.props.label
@@ -233,7 +247,16 @@ WinkAPI.prototype.setDial = function(dial, props, callback) {
          , channel_configuration : props.channel_configuration || dial.props.channel_configuration 
          , dial_configuration    : props.dial_configuration    || dial.props.dial_configuration
          };
-  return self.roundtrip('PUT', dial.path, json, callback);
+  return self.roundtrip('PUT', dial.path, json, function(err, datum) {
+    if (!!err) return callback(err);
+
+    return callback(null, { id      : dial.id
+                          , type    : dial.type
+                          , name    : dial.name
+                          , path    : dial.path
+                          , props   : datum
+                          });
+  });
 };
 
 

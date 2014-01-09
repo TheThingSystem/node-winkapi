@@ -1,6 +1,6 @@
 {
   "name"           : "node-winkapi"
-, "version"        : "0.0.7"
+, "version"        : "0.0.8"
 , "description"    : "A node.js module to interface with Quirky Wink API"
 , "author"         : {
     "name"         : "Marshall Rose"
