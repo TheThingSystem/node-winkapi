@@ -99,7 +99,7 @@ WinkAPI.prototype._refresh = function(callback) {
 
 
 WinkAPI.prototype.getUser = function(callback) {
-  return this.roundtrip('GET', '/users/me', null, callback);
+  return this.roundtrip('GET', '/users/me', callback);
 };
 
 WinkAPI.prototype.setUser = function(props, callback) {
@@ -125,11 +125,13 @@ WinkAPI.prototype.getDevices = function(callback) {
       datum = data[i];
 
       for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === (k.length - 3))) {
-        devices.push({ id    : datum[k]
-                     , type  : k.slice(0, -3)
-                     , name  : datum.name
-                     , path  : '/' + k.slice(0, -3) + 's/' + datum[k]
-                     , props : datum
+        devices.push({ id      : datum[k]
+                     , type    : k.slice(0, -3)
+                     , name    : datum.name
+                     , path    : '/' + k.slice(0, -3) + 's/' + datum[k]
+                     , dials   : self._children(datum, 'dials')
+                     , outlets : self._children(datum, 'outlets')
+                     , props   : datum
                      });
         break;
       }
@@ -142,17 +144,19 @@ WinkAPI.prototype.getDevices = function(callback) {
 WinkAPI.prototype.getDevice = function(device, callback) {
   var self = this;
 
-  return self.roundtrip('GET', device.path, null, function(err, datum) {
+  return self.roundtrip('GET', device.path, function(err, datum) {
     var k;
 
     if (!!err) return callback(err);
 
     for (k in datum) if ((datum.hasOwnProperty(k)) && (k.indexOf('_id') === (k.length - 3))) {
-      return callback(null, { id    : datum[k]
-                            , type  : k.slice(0, -3)
-                            , name  : datum.name
-                            , path  : '/' + k.slice(0, -3) + 's/' + datum[k]
-                            , props : datum
+      return callback(null, { id      : datum[k]
+                            , type    : k.slice(0, -3)
+                            , name    : datum.name
+                            , path    : '/' + k.slice(0, -3) + 's/' + datum[k]
+                            , dials   : self._children(datum,  'dials')
+                            , outlets : self._outlets(datum, 'outlets')
+                            , props   : datum
                             });
     }
 
@@ -160,20 +164,44 @@ WinkAPI.prototype.getDevice = function(device, callback) {
   });
 };
 
+WinkAPI.prototype._children = function(datum, prefix) {
+  var child, children, i, id, type;
+
+  if (!datum[prefix]) return null;
+
+  children = {};
+
+  type = prefix.slice(0, -1);
+  id = type + '_id';
+  for (i = 0; i < datum[prefix].length; i++) {
+    child = datum[prefix][i];
+    if (!child[id]) continue;
+
+    children[child[id]] = { id    : child[id]
+                          , type  : type
+                          , name  : child.name
+                          , path  : '/' + prefix + '/' + child[id]
+                          , props : child
+                          };
+  }
+
+  return children;
+};
+
 WinkAPI.prototype.setDevice = function(device, props, callback) {
   return this.roundtrip('PUT', device.path, props, callback);
 };
 
 WinkAPI.prototype.getIcons = function(callback) {
-  return this.roundtrip('GET', '/icons', null, callback);
+  return this.roundtrip('GET', '/icons', callback);
 };
 
 WinkAPI.prototype.getChannels = function(callback) {
-  return this.roundtrip('GET', '/channels', null, callback);
+  return this.roundtrip('GET', '/channels', callback);
 };
 
 WinkAPI.prototype.getServices = function(callback) {
-  return this.roundtrip('GET', '/users/me/linked_services', null, callback);
+  return this.roundtrip('GET', '/users/me/linked_services', callback);
 };
 
 WinkAPI.prototype.newService = function(props, callback) {
@@ -181,7 +209,7 @@ WinkAPI.prototype.newService = function(props, callback) {
 };
 
 WinkAPI.prototype.getTrigger = function(id, callback) {
-  return this.roundtrip('GET', '/triggers/' + id, null, callback);
+  return this.roundtrip('GET', '/triggers/' + id, callback);
 };
 
 WinkAPI.prototype.setTrigger = function(id, props, callback) {
@@ -189,19 +217,35 @@ WinkAPI.prototype.setTrigger = function(id, props, callback) {
 };
 
 WinkAPI.prototype.getDialTemplates = function(callback) {
-  return this.roundtrip('GET', '/dial_templates', null, callback);
+  return this.roundtrip('GET', '/dial_templates', callback);
+};
+
+WinkAPI.prototype.setDial = function(dial, props, callback) {
+  var json;
+
+  var self = this;
+
+  json = { name                  : props.name                  || dial.props.name
+         , label                 : props.label                 || dial.props.label
+         , labels                : props.labels                || dial.props.labels
+         , position              : props.position              || dial.props.position
+         , brightness            : props.brightness            || dial.props.brightness
+         , channel_configuration : props.channel_configuration || dial.props.channel_configuration 
+         , dial_configuration    : props.dial_configuration    || dial.props.dial_configuration
+         };
+  return self.roundtrip('PUT', dial.path, json, callback);
 };
 
 
 WinkAPI.prototype.roundtrip = function(method, path, json, callback) {
   var self = this;
 
-  if (typeof json === 'function') {
+  if ((!callback) && (typeof json === 'function')) {
     callback = json;
     json = null;
   }
 
-  return self.invoke(method, path, function(err, code, results) {
+  return self.invoke(method, path, json, function(err, code, results) {
     var data, errors;
 
     if (!!err) return callback(err);
@@ -221,7 +265,7 @@ WinkAPI.prototype.invoke = function(method, path, json, callback) {
 
   var self = this;
 
-  if (typeof json === 'function') {
+  if ((!callback) && (typeof json === 'function')) {
     callback = json;
     json = null;
   }
