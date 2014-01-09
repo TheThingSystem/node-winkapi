@@ -155,7 +155,7 @@ WinkAPI.prototype.getDevice = function(device, callback) {
                             , name    : datum.name
                             , path    : '/' + k.slice(0, -3) + 's/' + datum[k]
                             , dials   : self._children(datum,  'dials')
-                            , outlets : self._outlets(datum, 'outlets')
+                            , outlets : self._children(datum, 'outlets')
                             , props   : datum
                             });
     }
