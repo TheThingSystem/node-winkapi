@@ -62,13 +62,13 @@ API
       if (!!err) return console.log('getUser: ' + err.message);
 
       // inspect user{}
-    }
+    });
 
     winkapi.setUser({ name: '...' }, function(err, user) {
       if (!!err) return console.log('setUser: ' + err.message);
 
       // inspect user{}
-    }
+    });
 
 ### Get/Set device information
 
@@ -76,20 +76,19 @@ API
       if (!!err) return console.log('getDevices: ' + err.message);
 
       // inspect devices[{}]
-    }
+    });
 
     winkapi.getDevice(device, function(err, device) {
       if (!!err) return console.log('getDevice: ' + err.message);
 
       // inspect device{}
-    }
+    });
 
     winkapi.setDevice(device, { name: ... }, function(err, device) {
       if (!!err) return console.log('setDevice: ' + err.message);
 
       // inspect device{}
-    }
-
+    });
 
 ### Get icon information
 
@@ -97,8 +96,7 @@ API
       if (!!err) return console.log('getIcons: ' + err.message);
 
       // inspect icons[{}]
-    }
-
+    });
 
 ### Get channel information
 
@@ -106,14 +104,13 @@ API
       if (!!err) return console.log('getChannels: ' + err.message);
 
       // inspect channels[{}]
-    }
+    });
 
     winkapi.getDialTemplates(function(err, dialTemplates) {
       if (!!err) return console.log('getDialTemplates: ' + err.message);
 
       // inspect dialTemplates[{}]
-    }
-
+    });
 
 ### Get/Set linked service information
 
@@ -121,29 +118,49 @@ API
       if (!!err) return console.log('getServices: ' + err.message);
 
       // inspect services[{}]
-    }
+    });
 
     winkapi.newService({ service: '...', account: '...' }, function(err, service) {
       if (!!err) return console.log('setService: ' + err.message);
 
       // inspect service{}
-    }
+    });
 
-
-### Get/Set triggers
+### Get/Set trigger information
 
     winkapi.getTrigger(id, function(err, trigger) {
       if (!!err) return console.log('getTrigger: ' + err.message);
 
       // inspect trigger{}
-    }
+    });
 
     winkapi.setTrigger('1', { enabled: true }, function(err, trigger) {
       if (!!err) return console.log('setTrigger: ' + err.message);
 
       // inspect trigger{}
-    }
+    });
 
+### Get/Set dial-related information
+
+    winkapi.getDialTemplates(function(err, dialTemplates) {
+      if (!!err) return console.log('getDialTemplates: ' + err.message);
+
+      // inspect dialTemplates[{}]
+    });
+
+    winkapi.setDial(dial, { enabled: true }, function(err, dial) {
+      if (!!err) return console.log('setDial: ' + err.message);
+
+      // inspect dial{}
+    });
+
+### Set outlet-related information
+
+    winkapi.setOutlet(outlet, { powered: true }, function(err, outlet) {
+      if (!!err) return console.log('setOutlet: ' + err.message);
+
+      // inspect outlet{}
+    });
 
 ## For the Future
 - Sharing

@@ -204,6 +204,7 @@ WinkAPI.prototype.setDevice = function(device, props, callback) {
                           });
   });
 };
+WinkAPI.prototype.setOutlet = WinkAPI.prototype.setDevice;
 
 WinkAPI.prototype.getIcons = function(callback) {
   return this.roundtrip('GET', '/icons', callback);
@@ -237,7 +238,6 @@ WinkAPI.prototype.setDial = function(dial, props, callback) {
   var json;
 
   var self = this;
-if(!dial.props){console.log('>>> <<<');console.log(dial);}
 
   json = { name                  : props.name                  || dial.props.name
          , label                 : props.label                 || dial.props.label
