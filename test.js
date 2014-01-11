@@ -15,9 +15,17 @@ winkapi = new WinkAPI.WinkAPI({ clientID: clientID, clientSecret: clientSecret }
 
     console.log('user:'); console.log(user);
   }).getDevices(function(err, devices) {
+    var i;
+
     if (!!err) return console.log('getDevices: ' + err.message);
 
-    console.log('devices:'); console.log(devices);
+    console.log('devices:');
+    for (i = 0; i < devices.length; i++) {
+      console.log('device #' + i);
+      console.log(devices[i]);
+      if (!!devices[i].dials) console.log(devices[i].dials);
+      if (!!devices[i].outlets) console.log(devices[i].outlets);
+    }
   }).getIcons(function(err, icons) {
     if (!!err) return console.log('getIcons: ' + err.message);
 
