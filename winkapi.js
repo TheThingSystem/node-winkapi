@@ -52,7 +52,7 @@ WinkAPI.prototype.login = function(username, passphrase, callback) {
   self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
     var data, errors;
 
-    if (!!err) callback(err);
+    if (!!err) return callback(err);
 
     data = results.data;
     errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;
@@ -82,7 +82,7 @@ WinkAPI.prototype._refresh = function(callback) {
   self.invoke('POST', '/oauth2/token', json, function(err, code, results) {
     var data, errors;
 
-    if (!!err) callback(err);
+    if (!!err) return callback(err);
 
     data = results.data;
     errors = (!!results.errors) && util.isArray(results.errors) && (results.errors.length > 0) && results.errors;

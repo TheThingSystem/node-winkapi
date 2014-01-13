@@ -20,7 +20,7 @@ if not, go to [quirky.com](http://www.quirky.com/) and click on _SIGN UP_ (in th
 
     - Attach a [Wink-capable device](http://www.quirky.com/shop/smart-home) to your network.
 
-    - Lauch either the [iOS](https://itunes.apple.com/us/app/wink-instantly-connected/id719287124?mt=8)
+    - Launch either the [iOS](https://itunes.apple.com/us/app/wink-instantly-connected/id719287124?mt=8)
 or [Android](https://play.google.com/store/apps/details?id=com.quirky.android.wink.wink&hl=en) app on your smart phone/tablet.
 
     - Follow the directions to create an account.
