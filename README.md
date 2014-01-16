@@ -1,8 +1,6 @@
 node-winkapi
 ============
 
-**NB: this module is not completed yet. soon, very soon!**
-
 A node.js module to interface with the [Quirky](http://www.quirky.com/) [Wink API](http://docs.wink.apiary.io).
 
 Before Starting
