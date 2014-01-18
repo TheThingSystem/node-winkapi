@@ -1,4 +1,4 @@
-// winkapi.js
+// a node module to interface with the Quirky Wink API
 //   cf., http://docs.wink.apiary.io
 
 
