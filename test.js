@@ -1,4 +1,6 @@
-var WinkAPI = require('./winkapi');
+var WinkAPI = require('./winkapi')
+  , util    = require('util')
+  ;
 
 var clientID     = '...'
   , clientSecret = '...'
@@ -22,9 +24,7 @@ winkapi = new WinkAPI.WinkAPI({ clientID: clientID, clientSecret: clientSecret }
     console.log('devices:');
     for (i = 0; i < devices.length; i++) {
       console.log('device #' + i);
-      console.log(devices[i]);
-      if (!!devices[i].dials) console.log(devices[i].dials);
-      if (!!devices[i].outlets) console.log(devices[i].outlets);
+      console.log(util.inspect(devices[i], { depth: null }));
     }
   }).getIcons(function(err, icons) {
     if (!!err) return console.log('getIcons: ' + err.message);
