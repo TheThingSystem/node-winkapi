@@ -234,6 +234,14 @@ WinkAPI.prototype.getDialTemplates = function(callback) {
   return this.roundtrip('GET', '/dial_templates', callback);
 };
 
+WinkAPI.prototype.setDialValue = function(dial, value, callback) {
+  return this.setDial(dial, { value: value }, callback);
+};
+
+WinkAPI.prototype.setDialLabels = function(dial, mainLabel, secondaryLabel, callback) {
+  return this.setDial(dial, { label: mainLabel, labels: [ mainLabel, secondaryLabel] }, callback);
+};
+
 WinkAPI.prototype.setDial = function(dial, props, callback) {
   var json;
 

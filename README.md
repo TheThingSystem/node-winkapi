@@ -152,6 +152,18 @@ API
       // inspect dial{}
     });
 
+    winkapi.setDialValue(dial, value, callback) {
+      if (!!err) return console.log('setDialValue: ' + err.message);
+
+      // inspect dial{}
+    }
+
+    winkapi.setDialLabels(dial, mainLabel, secondaryLabel, callback) {
+      if (!!err) return console.log('setDialLabels: ' + err.message);
+
+      // inspect dial{}
+    }
+
 ### Set outlet-related information
 
     winkapi.setOutlet(outlet, { powered: true }, function(err, outlet) {
